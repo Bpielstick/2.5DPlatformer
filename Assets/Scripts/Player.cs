@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class Player : MonoBehaviour
-{
+{   
     [SerializeField] private float maxSpeed;
     [SerializeField] private float currentSpeed;
     [SerializeField] private float acceleration;
@@ -15,9 +15,12 @@ public class Player : MonoBehaviour
     [SerializeField] private bool isJumping = false;
     [SerializeField] private bool doubleJump = true;
     [SerializeField] private float jumpSpeed;
-
+    [SerializeField] private int coinCount = 0;
 
     [SerializeField] private Vector3 moveDirection;
+
+    [SerializeField] private GameObject UIManager;
+    private UIManager uiManager;
     private CharacterController characterController;
     private LayerMask layerMask = 0;
 
@@ -25,6 +28,7 @@ public class Player : MonoBehaviour
     void Start()
     {
         characterController = GetComponent<CharacterController>();
+        uiManager = UIManager.GetComponent<UIManager>();
     }
 
     // Update is called once per frame
@@ -58,54 +62,6 @@ public class Player : MonoBehaviour
             }
         }
 
-        /*
-        if (!characterController.isGrounded)
-        {
-            RaycastHit Ground;
-            RaycastHit InFront;
-            RaycastHit Behind;
-
-            Debug.DrawRay(transform.position, transform.TransformDirection(Vector3.down) * 1.3f, Color.yellow);           
-            if (Physics.Raycast(transform.position, transform.TransformDirection(Vector3.down), out Ground, 1.3f))
-            {
-                Debug.Log("raycast hit");
-                jumpEnabled = true;
-            }
-            else
-            {
-                Debug.DrawRay(transform.position, new Vector3(.5f, -1.3f, 0) * 1, Color.yellow);
-                if (Physics.Raycast(transform.position, new Vector3(-.5f, -1.3f, 0), out Ground, 1))
-                {
-                    jumpEnabled = true;
-
-                    Debug.DrawRay(transform.position, transform.TransformDirection(Vector3.right) * 1f, Color.red);
-                    if (Physics.Raycast(transform.position, transform.TransformDirection(Vector3.left), out Behind, 1))
-                    {
-                        if (Ground.Equals(Behind))
-                        {
-                            jumpEnabled = false;
-                        }
-                    }
-                }
-
-                Debug.DrawRay(transform.position, new Vector3(-.5f, -1.3f, 0) * 1, Color.yellow);
-                if (Physics.Raycast(transform.position, new Vector3(.5f, -1.3f, 0), out Ground, 1))
-                {
-                    jumpEnabled = true;
-
-                    Debug.DrawRay(transform.position, transform.TransformDirection(Vector3.left) * 1f, Color.red);
-                    if (Physics.Raycast(transform.position, transform.TransformDirection(Vector3.forward) * 1f, out InFront, 1))
-                    {
-                        if (Ground.Equals(InFront))
-                        {
-                            jumpEnabled = false;
-                        }
-                    }
-                }
-            }            
-        }
-        */
-
         if (Input.GetButtonDown("Jump"))
         {        
             if (characterController.isGrounded)
@@ -122,7 +78,8 @@ public class Player : MonoBehaviour
                 doubleJump = false;
             }    
         }
-        moveDirection = new Vector3(currentSpeed, fallSpeed, 0);        
+        moveDirection = new Vector3(currentSpeed, fallSpeed, 0);
+        characterController.Move(moveDirection * Time.deltaTime);
     }
 
     private IEnumerator JumpRoutine()
@@ -131,8 +88,17 @@ public class Player : MonoBehaviour
         isJumping = false;
     }   
 
-    private void FixedUpdate()
+    public void Pickup (string PickupType)
     {
-        characterController.Move(moveDirection * Time.deltaTime);
+        switch (PickupType)
+        {
+            case "Coin":
+                coinCount++;
+                break;
+            default:
+                break;           
+        }
+
+        uiManager.UpdateUI(coinCount);
     }
 }
