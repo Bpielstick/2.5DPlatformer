@@ -6,6 +6,7 @@ using TMPro;
 public class UIManager : MonoBehaviour
 {
     [SerializeField] private GameObject coinCountDisplay;
+    [SerializeField] private GameObject livesCountDisplay;
 
     // Start is called before the first frame update
     void Start()
@@ -19,8 +20,9 @@ public class UIManager : MonoBehaviour
         
     }
 
-    public void UpdateUI (int newCoinCount)
+    public void UpdateUI (int newCoinCount, int newLivesCount)
     {       
-        coinCountDisplay.GetComponent<TextMeshProUGUI>().text = "x" + newCoinCount;
+        coinCountDisplay.GetComponent<TextMeshProUGUI>().text = "Coins x" + newCoinCount;
+        livesCountDisplay.GetComponent<TextMeshProUGUI>().text = "Lives: " + newLivesCount;
     }
 }
